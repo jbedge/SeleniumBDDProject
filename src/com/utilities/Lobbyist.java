@@ -1,6 +1,5 @@
 package com.utilities;
 
-import sun.plugin.javascript.navig.Link;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +39,7 @@ public class Lobbyist implements Comparable {
 	private Date updateDate = null;
 	private ArrayList<String> recommendations = new ArrayList();
 	private String searchText = "";
-	private ArrayList<Link> links = new ArrayList();
+	private ArrayList<String> links = new ArrayList();
 	private ArrayList<String> states = new ArrayList();
 	private String org = "";
 	private String address1 = "";
@@ -674,11 +673,11 @@ public class Lobbyist implements Comparable {
 		this.searchText = searchText;
 	}
 
-	public ArrayList<Link> getLinks() {
+	public ArrayList<String> getLinks() {
 		return links;
 	}
 
-	public void setLinks(ArrayList<Link> links) {
+	public void setLinks(ArrayList<String> links) {
 		this.links = links;
 	}
 

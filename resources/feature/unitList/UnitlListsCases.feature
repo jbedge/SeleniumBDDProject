@@ -19,7 +19,7 @@ Feature: Search and select from unit list
     And I click on edit button
     And I search and selects "DeviceName2"
     And I click on blank space
-#
+
 #  @TC003
 #  Scenario: Rename existing list
 #    Given I launch the URL

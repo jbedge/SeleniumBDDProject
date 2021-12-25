@@ -7,8 +7,12 @@ import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.testng.ITestContext;
 import org.testng.Reporter;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 
 import java.io.File;
@@ -21,22 +25,29 @@ import java.util.List;
 @CucumberOptions(
         features = "resources/feature",
         glue = {"/src/com/stepdefinition/","com.pages","com.stepdefinition"},
-//        plugin = { "pretty", "json:target/cucumberDefault.json" },
-        plugin = { "pretty", "json:target/cucumberDefault.json" },
+        plugin = { "pretty", "json:target/cucumberDefault.json","rerun:target/rerun.txt"},
         monochrome = true,
         dryRun = false,
         tags = "@unitcases"
-//        plugin = {"pretty","com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"}
 )
 public class RunnerTest extends AbstractTestNGCucumberTests {
+    Logger log= LogManager.getLogger();
 
     private String dateString;
 
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
+        log.info("inside data provider");
         return super.scenarios();
     }
+
+//    @BeforeTest
+//    public void threadCount(ITestContext context){
+//        Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getSuite().setDataProviderThreadCount(2);
+//        context.getCurrentXmlTest().getSuite().setDataProviderThreadCount(1);
+//        context.getCurrentXmlTest().getSuite().setPreserveOrder(false);
+//    }
 
     private String getprojectName;
     private String getBrowser;
@@ -48,7 +59,7 @@ public class RunnerTest extends AbstractTestNGCucumberTests {
         System.out.println("Inside the constructor");
     }
 
-    @AfterTest
+    @AfterTest(alwaysRun = true)
     public void generateReports(){
         getprojectName = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("projectName");
         getBrowser= Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("browser");
@@ -131,7 +142,7 @@ public class RunnerTest extends AbstractTestNGCucumberTests {
             Configuration configuration = new Configuration(rd, getprojectName);
             configuration.addClassifications("Browser", getBrowser);
             configuration.addClassifications("Version", getVersion);
-            configuration.addClassifications("USer",getUser );
+            configuration.addClassifications("User",getUser );
             configuration.addClassifications("Environment", getEnvironment);
             //List<String> jsonReports, File reportDirectory, String pluginUrlPath, String buildNumber, String buildProject, boolean skippedFails, boolean undefinedFails, boolean flashCharts, boolean runWithJenkins, boolean artifactsEnabled, String artifactConfig, boolean highCharts
             ReportBuilder reportBuilder = new ReportBuilder(jsonReports, configuration);

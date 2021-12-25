@@ -43,28 +43,29 @@ public class DriverManager {
                 System.setProperty("webdriver.chrome.driver","browserDrivers/chromedriver.exe");
 //                WebDriverManager.chromedriver().setup();
                 ChromeOptions options1 = new ChromeOptions();
-//                options1.addArguments("--disable-extensions");
-//                options1.addArguments("disable-infobars");
-//                options1.addArguments("start-maximized");
-//                options1.addArguments("--disable-gpu");
-//                options1.setCapability("app", System.getProperty("user.dir")+"\\browserDrivers\\chromedriver.exe");
+                options1.addArguments("--disable-extensions");
+                options1.addArguments("disable-infobars");
+                options1.addArguments("start-maximized");
+                options1.addArguments("--disable-gpu");
+                options1.setCapability("app", System.getProperty("user.dir")+"\\browserDrivers\\chromedriver.exe");
 
 
 
-                Runtime rt = Runtime.getRuntime();
-                Process p =rt.exec(new String[]{"cmd.exe","/c","start"});
-                p.waitFor();
-                p=rt.exec("taskkill /F /IM chrome.exe");
-                p.waitFor();
+//                Runtime rt = Runtime.getRuntime();
+//                Process p =rt.exec(new String[]{"cmd.exe","/c","start"});
+//                p.waitFor();
+//                p=rt.exec("taskkill /F /IM chrome.exe");
+//                p.waitFor();
 
-                p.waitFor();
-                rt.exec("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe -remote-debugging-port=9222 -user-data-dir=C:\\ChromeData");
-                p.waitFor();
-                Thread.sleep(5000);
-                p.waitFor();
-                Map<String, Object> prefs = new HashMap<String, Object>();
-                Map<String, Object> langs = new HashMap<String, Object>();
-                options1.setExperimentalOption("debuggerAddress","localhost:9222");
+//                p.waitFor();
+//                rt.exec("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe -remote-debugging-port=9222 -user-data-dir=C:\\ChromeData");
+//                p.waitFor();
+//                Thread.sleep(5000);
+//                p.waitFor();
+//                Map<String, Object> prefs = new HashMap<String, Object>();
+//                Map<String, Object> langs = new HashMap<String, Object>();
+//                options1.setExperimentalOption("debuggerAddress","localhost:9222");
+
 //                String proxy = "127.0.0.1:5000";
 //                options1.addArguments("--proxy-server=http://" + proxy);
 //                chrome.exe -remote-debugging-port=9222 -user-data-dir=C:\ChromeData :command to run chrome in debugmode
