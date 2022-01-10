@@ -23,8 +23,9 @@ import java.util.Date;
 import java.util.List;
 
 @CucumberOptions(
-        features = "resources/feature",
-        glue = {"/src/com/stepdefinition/","com.pages","com.stepdefinition"},
+//        features = "resources/feature",
+        features = "@target/rerun.txt",
+        glue = {"com.pages","com.stepdefinition"},
         plugin = { "pretty", "json:target/cucumberDefault.json","rerun:target/rerun.txt"},
         monochrome = true,
         dryRun = false,
@@ -38,6 +39,9 @@ public class RunnerTest extends AbstractTestNGCucumberTests {
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
+
+
+
         log.info("inside data provider");
         return super.scenarios();
     }
@@ -60,7 +64,8 @@ public class RunnerTest extends AbstractTestNGCucumberTests {
     }
 
     @AfterTest(alwaysRun = true)
-    public void generateReports(){
+    public void generateReports() throws ClassNotFoundException {
+
         getprojectName = Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("projectName");
         getBrowser= Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("browser");
         getVersion= Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getParameter("version");

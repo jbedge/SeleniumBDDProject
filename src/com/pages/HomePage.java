@@ -2,11 +2,19 @@ package com.pages;
 
 import com.base.ActionMethods;
 import com.base.TestConfiguration;
+import com.utilities.CSVWriterClass;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+
+import static com.utilities.CSVWriterClass.createCSVFIle;
 
 public class HomePage extends ActionMethods {
 
@@ -167,5 +175,33 @@ public class HomePage extends ActionMethods {
     public void iModifyTheName(String jsonData) throws Exception{
         waitForVisibilityOfElement(inplistName);
         clearAndEnterValue(inplistName,jsonData);
+    }
+
+    public void extractURLs() throws Exception{
+        String url;
+        String title;
+        String description;
+        By allurls=By.xpath("//a");
+        List<WebElement> webElements=driver.findElements(allurls);
+        String filename="TestData/BBCData"+getDateAndTime()+".csv";
+        CSVWriterClass.createCSVFIle(filename,new String[]{"URL","Title","Description"});
+        for(WebElement el:webElements){
+            logger.info("Extracting data...");
+            url=el.getAttribute("href");
+            title=el.getText();
+//            List<WebElement> eleDesc=el.findElements(By.xpath("ancestor::div[@class='media__content']//p"));
+            List<WebElement> eleDesc=el.findElements(By.xpath("following::p"));
+            description=(eleDesc.size()>0?eleDesc.get(0).getText():"NA");
+            CSVWriterClass.addRowsinCSV(new String[]{url,title,description});
+        }
+    }
+
+    public static String getDateAndTime(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HH_mm");
+        sdf.setTimeZone(TimeZone.getTimeZone("JST"));
+        String dateTime =sdf.format(calendar.getTime());
+        return dateTime;
     }
 }

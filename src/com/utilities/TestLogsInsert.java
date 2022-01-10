@@ -288,7 +288,6 @@ public class TestLogsInsert {
     }
 
     public String getDateAndTime(){
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

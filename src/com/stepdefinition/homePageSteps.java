@@ -25,6 +25,11 @@ public class homePageSteps {
         homePage.getURL();
     }
 
+    @Given("^I extract all urls from homepage$")
+    public void i_extractURL() throws Throwable {
+        homePage.extractURLs();
+    }
+
 
     @And("I load test {string} data")
     public void iLoadTestData(String arg0) throws Exception  {

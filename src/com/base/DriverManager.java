@@ -41,13 +41,14 @@ public class DriverManager {
                 break;
             case "chrome":
                 System.setProperty("webdriver.chrome.driver","browserDrivers/chromedriver.exe");
-//                WebDriverManager.chromedriver().setup();
+                WebDriverManager.chromedriver().setup();
                 ChromeOptions options1 = new ChromeOptions();
                 options1.addArguments("--disable-extensions");
                 options1.addArguments("disable-infobars");
                 options1.addArguments("start-maximized");
                 options1.addArguments("--disable-gpu");
-                options1.setCapability("app", System.getProperty("user.dir")+"\\browserDrivers\\chromedriver.exe");
+                options1.addArguments("--headless");
+//                options1.setCapability("app", System.getProperty("user.dir")+"\\browserDrivers\\chromedriver.exe");
 
 
 

@@ -1,0 +1,109 @@
+@Library('devops-ihm-shared-lib@v3.0.4')
+def utils = new com.ihm.tools.Utils()
+def NODE = global.getNode()
+def S3_REGION = global.getS3Region()
+final JAVA_JDK_PATH = global.getJavaJdkPath()
+def CENTRAL_TEST_AUTOMATION_IMAGE_ADDRESS = global.getJavaBuildImageAddress()
+try {
+    properties(
+            [
+                    [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
+                    parameters(
+                            [
+                                    string(name: "BRANCH", defaultValue: "ADT-31", description: "Branch to run automation tests from."),
+                                    choice(name: "TEST_ENVIRONMENT", choices: "stg\nci\nprod", description: "Choose which environment you want to run your tests against."),
+                                    choice(name: "AGENCY", choices: "false\ntrue", description: "Choose agency type"),
+                                    string(name: "TEST_AUTOMATION_SLACK", defaultValue: "#debug", description: "Slack Notification Channel.")
+                            ]
+                    ), pipelineTriggers([])
+            ]
+    )
+    node(NODE) {
+        timestamps {
+            stageTemplate([stageLabel: 'Clean workspace']) {
+                deleteDir()
+            }
+
+            stageTemplate([ stageLabel: "Checkout project" ]) {
+                checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "*/${BRANCH}"]],
+                        doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+                        extensions: scm.extensions,
+                        userRemoteConfigs: scm.userRemoteConfigs
+                ])
+                slackSend channel: "${TEST_AUTOMATION_SLACK}",
+                        message: "started <${env.BUILD_URL}|#${env.BUILD_NUMBER}> on *${env.JOB_NAME}* on *${TEST_ENVIRONMENT}*"
+            }
+
+            stageTemplate([stageLabel: 'Check Environment']) {
+
+                env.JAVA_HOME = "${tool 'java8u112'}"
+                env.PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
+
+                def X1_MAVEN_REPO_CREDENTIALS = utils.getUserPasswordCrendential("x1-maven")
+                env.MAVEN_AWS_KEY = "${X1_MAVEN_REPO_CREDENTIALS[0]}"
+                env.MAVEN_AWS_SECRET = "${X1_MAVEN_REPO_CREDENTIALS[1]}"
+
+            }
+
+            stageTemplate([stageLabel: 'Load Resources']) {
+                utils.loadLibraryResource('scripts/aws-login.sh')
+            }
+
+            stageTemplate([stageLabel   : 'Authentications',
+                           milestone               : true,
+                           scriptToExecute         : 'scripts/aws-login.sh',
+                           region                  : S3_REGION
+            ]) {}
+
+            // SDET Automated Tests
+            stageTemplate([stageLabel: 'E2E UI Tests',
+                           milestone: true
+            ]) {
+                // withEnv([
+                //     "CONFIGURATIONFILENAME=${config.appName}",
+                //     "ENVIRONMENT=stg",
+                //     "ENVIRONMENTS=${ENVIRONMENTS}"
+                // ])
+                // {
+                //     sh "aws configure set region ${S3_REGION} && mkdir -p ${WORKSPACE}/.kube && aws s3 cp ${KUBERNETES_S3_BUCKET}stg-x1-nonprod/kube_config  ${WORKSPACE}/.kube/config"
+                // }
+                docker.image(CENTRAL_TEST_AUTOMATION_IMAGE_ADDRESS).inside {
+                    withEnv([
+                            "JAVA_HOME=${JAVA_JDK_PATH}",
+                            "KUBECONFIG=${WORKSPACE}/.kube/config"
+                    ]) {
+                        sh(script:"ls -lath ")
+                        sh(script:"pwd")
+                        sh(script:"./gradlew cucumber")
+                    }
+                }
+
+                //Publish HTML
+//                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target', reportFiles: 'index.html', reportName: 'Automation Test Report', reportTitles: ''])
+
+            }
+        }
+    }
+
+    currentBuild.result = 'SUCCESS'
+}
+catch(e) {
+    currentBuild.result = 'FAILURE'
+    echo "Fail: ${e}"
+
+    throw e
+} finally {
+    node(NODE) {
+        if (currentBuild.result == "FAILURE") {
+            slackSend channel: "${TEST_AUTOMATION_SLACK}", color: "danger", message: "Build <${env.BUILD_URL}|#${env.BUILD_NUMBER}> failed on *${env.JOB_NAME}* on *${TEST_ENVIRONMENT}*"
+        }
+        else {
+            slackSend channel: "${TEST_AUTOMATION_SLACK}", color: "good", message: "Build <${env.BUILD_URL}|#${env.BUILD_NUMBER}> successful on *${env.JOB_NAME}* on *${TEST_ENVIRONMENT}*"
+        }
+        stageTemplate([stageLabel: 'Clean workspace']) {
+            deleteDir()
+        }
+    }
+}

@@ -1,7 +1,6 @@
 package com.utilities;
 
-import com.opencsv.CSVReader;
-import io.qameta.allure.Step;
+
 import org.openqa.selenium.By;
 import java.io.FileReader;
 import java.text.DateFormat;
@@ -20,7 +19,6 @@ public class CSVReaderClass {
     By hdr = By.xpath("//h2[text()='View Properties']");
     By bcm = By.xpath("//a[normalize-space()='Peterson, M.A.']//following-sibling::a[normalize-space()='120989']//following-sibling::a[normalize-space()='No Value Specified - 120989 - Peterson, M.A.']");
 
-    @Step("Login into DocuShare")
 
     public void verifyFields(int iteration) throws Exception {
 

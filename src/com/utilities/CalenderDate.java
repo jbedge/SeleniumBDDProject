@@ -4,6 +4,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class CalenderDate {
     WebDriver driver = null;
   
@@ -38,6 +43,15 @@ public class CalenderDate {
             WebElement el=driver.findElement(locYear);
             el.click();
         }
+    }
+
+    public static String getDateAndTime(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("JST"));
+        String dateTime =sdf.format(calendar.getTime());
+        return dateTime;
     }
 
 

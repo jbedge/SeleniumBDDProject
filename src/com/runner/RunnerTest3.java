@@ -1,6 +1,7 @@
 package com.runner;
 
 
+import io.cucumber.core.options.RuntimeOptions;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 import org.testng.annotations.DataProvider;
@@ -32,6 +33,8 @@ public class RunnerTest3 extends AbstractTestNGCucumberTests {
     private String getEnvironment;
 
     public RunnerTest3(){
+        RuntimeOptions options=RuntimeOptions.defaultOptions();
+
         System.out.println("Inside the constructor");
     }
 
