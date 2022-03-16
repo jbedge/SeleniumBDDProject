@@ -25,6 +25,11 @@ public class homePageSteps {
         homePage.getURL();
     }
 
+    @Given("^I start from last execution$")
+    public void i_start_from_last_execution() throws Throwable {
+        homePage.getURL();
+    }
+
     @Given("^I extract all urls from homepage$")
     public void i_extractURL() throws Throwable {
         homePage.extractURLs();

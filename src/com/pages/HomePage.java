@@ -2,7 +2,11 @@ package com.pages;
 
 import com.base.ActionMethods;
 import com.base.TestConfiguration;
+import com.base.UIElement;
+import com.base.UILocatorType;
 import com.utilities.CSVWriterClass;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -20,6 +24,8 @@ public class HomePage extends ActionMethods {
 
     private WebDriver driver;
     private TestConfiguration testConfig;
+//    Logger logger= LogManager.getLogger();
+    Logger logger= LogManager.getLogger(this.getClass().getCanonicalName());
 
     public HomePage(WebDriver driver, TestConfiguration configuration) {
         super(driver, configuration);
@@ -178,11 +184,15 @@ public class HomePage extends ActionMethods {
     }
 
     public void extractURLs() throws Exception{
+        logger.info("started:extractURLs");
+        System.out.println(driver.getCurrentUrl());
         String url;
         String title;
         String description;
         By allurls=By.xpath("//a");
-        List<WebElement> webElements=driver.findElements(allurls);
+        UIElement signIn=new UIElement(UILocatorType.xpath,"//a[normalize-space()='Sign in']");
+        driver.findElement(findBy(signIn)).click();
+        List<WebElement> webElements=driver.findElements(By.tagName("a"));
         String filename="TestData/BBCData"+getDateAndTime()+".csv";
         CSVWriterClass.createCSVFIle(filename,new String[]{"URL","Title","Description"});
         for(WebElement el:webElements){
@@ -193,7 +203,9 @@ public class HomePage extends ActionMethods {
             List<WebElement> eleDesc=el.findElements(By.xpath("following::p"));
             description=(eleDesc.size()>0?eleDesc.get(0).getText():"NA");
             CSVWriterClass.addRowsinCSV(new String[]{url,title,description});
+            break;
         }
+        logger.info("completed:extractURLs");
     }
 
     public static String getDateAndTime(){

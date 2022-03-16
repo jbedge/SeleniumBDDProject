@@ -38,6 +38,30 @@ public class ActionMethods  {
 
     }
 
+    protected By findBy(UIElement element) throws Exception{
+        By locator=null;
+        switch (element.getLocatorType()){
+            case id:
+                locator=By.id(element.getLocator());
+                break;
+            case css:
+                locator=By.cssSelector(element.getLocator());
+                break;
+            case xpath:
+                locator= By.xpath(element.getLocator());
+                break;
+            case text:
+                locator=By.partialLinkText(element.getLocator());
+                break;
+            case name:
+                locator=By.name(element.getLocator());
+                break;
+            default:
+                throw new  Exception("Locator type is invalid");
+        }
+        return locator;
+    }
+
     private By findBy(By locator) throws Exception {
         try {
             return locator;

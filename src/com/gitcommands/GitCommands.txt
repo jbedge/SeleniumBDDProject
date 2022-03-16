@@ -1,0 +1,12 @@
+git clone https://github.com/UserProfile/repository.git
+git init
+git add .
+git commit -m"insert Message here"
+git push origin master
+
+git init
+git add .
+git commit -m"insert Message here"
+git remote add origin https://github.com/Usheninte/example.git
+git remote -v
+git push origin master

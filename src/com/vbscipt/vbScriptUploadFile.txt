@@ -1,0 +1,11 @@
+String filepath = "\\\\10.2.19.133\\c$\\Users\\Madan.Reddy\\Desktop\\TestData\\somefile.txt";
+File file = new File(filepath);
+file.createNewFile();
+
+Set WshShell = WScript.CreateObject("WScript.Shell")
+WshShell.SendKeys "example.pdf"
+WshShell.SendKeys "{ENTER}"
+
+Thread.sleep(2000);
+Runtime.getRuntime().exec( "wscript C:\\Users\\Madan.Reddy\\Desktop\\upload\\script.vbs" );
+Thread.sleep(2000);

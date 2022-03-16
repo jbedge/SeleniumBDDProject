@@ -1,0 +1,7 @@
+Array.from(document.querySelectorAll("body button")).forEach(element => {
+    console.log(element.getAttribute("title"));
+});
+
+Array.from(document.querySelectorAll("body button")).forEach(element => {
+    console.log(element.textcontent);
+});
