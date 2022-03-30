@@ -46,12 +46,14 @@ public class RunnerTest extends AbstractTestNGCucumberTests {
         return super.scenarios();
     }
 
-//    @BeforeTest
-//    public void threadCount(ITestContext context){
-//        Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getSuite().setDataProviderThreadCount(2);
-//        context.getCurrentXmlTest().getSuite().setDataProviderThreadCount(1);
-//        context.getCurrentXmlTest().getSuite().setPreserveOrder(false);
-//    }
+//    parallel execution
+//    Thread count can be set using the below method
+    @BeforeTest
+    public void threadCount(ITestContext context){
+        Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest().getSuite().setDataProviderThreadCount(2);
+        context.getCurrentXmlTest().getSuite().setDataProviderThreadCount(1);
+        context.getCurrentXmlTest().getSuite().setPreserveOrder(false);
+    }
 
     private String getprojectName;
     private String getBrowser;
