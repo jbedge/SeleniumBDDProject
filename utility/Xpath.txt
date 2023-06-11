@@ -36,3 +36,12 @@ document.querySelector("#divFilters",":before").click()
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
     </build>
+
+********************* Upload file *************************
+WebElement browser = driver.findElement(By.xpath("//input[@type='file']"));
+        ((RemoteWebElement)browser).setFileDetector(new LocalFileDetector());
+        browser.sendKeys(getfile());
+
+String getfile(){
+        return new File("./src/main/resources/TestData/Copy.xlsx").getAbsolutePath();
+    }
