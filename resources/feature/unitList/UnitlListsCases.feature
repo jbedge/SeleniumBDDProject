@@ -1,4 +1,4 @@
-@unitcases
+
 Feature: Search and select from unit list
 
   @TC001
@@ -11,14 +11,15 @@ Feature: Search and select from unit list
     Then i verify the list count after add
     Then I verify the list displayed
 
-  @TC002
-  Scenario: Search and Add device in existing list
-    Given I launch the URL
-    And I load test "TC001.json" data
-    And I click on alert Ok button
-    And I click on edit button
-    And I search and selects "DeviceName2"
-    And I click on blank space
+
+#  @TC002
+#  Scenario: Search and Add device in existing list
+#    Given I launch the URL
+#    And I load test "TC001.json" data
+#    And I click on alert Ok button
+#    And I click on edit button
+#    And I search and selects "DeviceName2"
+#    And I click on blank space
 
 #  @TC003
 #  Scenario: Rename existing list

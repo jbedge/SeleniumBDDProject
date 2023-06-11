@@ -39,10 +39,6 @@ public class RunnerTest extends AbstractTestNGCucumberTests {
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
-
-
-
-        log.info("inside data provider");
         return super.scenarios();
     }
 

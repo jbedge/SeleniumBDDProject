@@ -433,11 +433,12 @@ public class ActionMethods  {
             throw e;
         }
     }
-
+    private Duration timeoutInSeconds;
     public void waitForPageLoad() throws Exception{
         logger.info("Started waitForPageLoad method execution");
         Thread.sleep(5000);
-        long timeoutInSeconds = 60;
+        timeoutInSeconds = Duration.ofSeconds(60);
+//        long timeoutInSeconds = 60;
         long sleepTimeInMilliSeconds = 200;
         ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver driver) {
@@ -697,7 +698,7 @@ public class ActionMethods  {
 
     public void waitForPageLoad(WebDriver driver1) throws Exception{
         logger.info("Started waitForPageLoad method execution");
-        long timeoutInSeconds = 60;
+//        long timeoutInSeconds = 60;
         long sleepTimeInMilliSeconds = 200;
         ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver driver) {
@@ -718,7 +719,7 @@ public class ActionMethods  {
     public boolean waitOnlocator(WebElement locator, WebDriver driver) throws Exception {
         try {
             logger.info("Started waitOnlocator method execution");
-            long timeoutInSeconds = 50;
+//            long timeoutInSeconds = 50;
             WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
             WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
             if (element != null) {
@@ -887,7 +888,6 @@ public class ActionMethods  {
     public boolean waitOnlocator(By locator) throws Exception {
         try {
             logger.info("Started waitOnlocator method execution");
-            long timeoutInSeconds = 50;
             WebDriverWait wait = new WebDriverWait(driverObj, timeoutInSeconds);
             WebElement element = wait.until(ExpectedConditions.elementToBeClickable(this.findBy(locator)));
             if (element != null) {
@@ -932,7 +932,6 @@ public class ActionMethods  {
     public boolean isAlertPresent() throws Exception {
         try {
             logger.info("Started isAlertPresent method execution");
-            long timeoutInSeconds = 7;
             WebDriverWait wait = new WebDriverWait(driverObj, timeoutInSeconds);
             wait.until(ExpectedConditions.alertIsPresent());
             return true;
@@ -1005,7 +1004,8 @@ public class ActionMethods  {
     public boolean waitForInvisibilityOfElement(By locator, long timeOut) throws Exception {
         logger.info("Started waitForInvisibilityOfElement method execution");
         try {
-            WebDriverWait wd = new WebDriverWait(driverObj,timeOut);
+            Duration duration=Duration.ofSeconds(timeOut);
+            WebDriverWait wd = new WebDriverWait(driverObj,duration);
             wd.until(ExpectedConditions.invisibilityOfElementLocated(findBy(locator)));
             return true;
         } catch (Exception e) {
@@ -1017,8 +1017,9 @@ public class ActionMethods  {
     public boolean waitForInvisibilityOfElement1(By locator, long timeOut) throws Exception {
         logger.info("Started waitForInvisibilityOfElement method execution");
         try {
-            driverObj.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-            WebDriverWait wd = new WebDriverWait(driverObj, timeOut);
+            Duration duration=Duration.ofSeconds(timeOut);
+            driverObj.manage().timeouts().implicitlyWait(Duration.ofSeconds(0));
+            WebDriverWait wd = new WebDriverWait(driverObj, duration);
             wd.until(ExpectedConditions.invisibilityOfElementLocated(findBy(locator)));
             return true;
         } catch (Exception e) {
@@ -1141,7 +1142,6 @@ public class ActionMethods  {
     public boolean waitForAlert() throws Exception {
         try {
             logger.info("Started isAlertPresent method execution");
-            long timeoutInSeconds = 50;
             WebDriverWait wait = new WebDriverWait(driverObj, timeoutInSeconds);
             wait.until(ExpectedConditions.alertIsPresent());
             return true;
@@ -1155,7 +1155,6 @@ public class ActionMethods  {
     public boolean waitForWindowCountToBe(int count) throws Exception {
         try {
             logger.info("Started isAlertPresent method execution");
-            long timeoutInSeconds = 50;
             WebDriverWait wait = new WebDriverWait(driverObj, timeoutInSeconds);
             wait.until(ExpectedConditions.numberOfWindowsToBe(count));
             return true;

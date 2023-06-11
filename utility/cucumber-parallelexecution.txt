@@ -1,0 +1,32 @@
+****To Run Cucumber using commandline****
+
+Step 1: create the below class :
+
+import io.cucumber.core.cli.Main;
+public class RunnerTest {
+    public static void main(String[] args) throws Throwable {
+        // Provide the command-line arguments
+        String[] argv = {
+                "--glue", "com.steps",
+                "--plugin", "pretty",
+                "--threads", "2",
+                "Features/"
+        };
+
+        // Run the Cucumber features using the CLI
+        Main.run(argv, Thread.currentThread().getContextClassLoader());
+    }
+
+Step 2 : Add maven plugin i.e
+  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M5</version>
+  </plugin>
+
+Step 3 : run the following command
+mvn test -Dtest='com.runner.RunnerTest'
+Note : Even we can pass tags trogh commandline using -Dtags and then use that
+ in programming language  using
+System.getProperty("tags")
+

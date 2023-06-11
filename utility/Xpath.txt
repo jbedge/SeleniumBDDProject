@@ -1,0 +1,38 @@
+public void scrollToElement(By locator)
+    {
+         String script =
+            "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
+                    + "var elementTop = arguments[0].getBoundingClientRect().top;"
+                    + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript(script, waitForElement(locator));
+    }
+
+//*[transalate('first','second','third')]
+first : input paramer
+second : string to be replaced
+third : string replace
+//*[translate(text(),'Packs() ','') > 0]
+** In the given text we are replacing each letter from String "Pakcs " with '' i.e P with '', a with '' etc..
+//b[translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'order cycle']
+** Here In the given text we are replacing each letter to lower case
+
+**Count in xpath incase of table
+//p[normalize-space()='Confirm']//following-sibling::table//th[count(//td[normalize-space()='Total Pay Hrs']//preceding-sibling::td)+1]
+
+CSVWriter writer = new CSVWriter(new FileWriter(Constants.CSV_FILE_OUT),
+                    CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER,
+                    CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
+
+**Click on before using javascript these are called pseudo elements**
+
+document.querySelector(arguments[0],':before').click();",cssPath)
+
+document.querySelector("#divFilters",":before").click()
+
+***********************adding path in POM*******************************
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+    </build>

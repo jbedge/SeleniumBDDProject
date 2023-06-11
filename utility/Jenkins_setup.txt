@@ -1,0 +1,75 @@
+**Pre-requisite**
+Java 11, Git, Maven
+
+
+Jenkins setup
+1) https://www.jenkins.io/download/
+2) click on "Generic Java Package" .war
+3) Run the command Java -jar path of war file
+4) for jenkins git authenication first install git and try with token
+
+****for multi module project add below line in pom****
+4)<packaging>pom</packaging>
+
+Admin
+Jenkins@1245
+
+******Bat command****
+start cmd.exe /k java -jar C:\Users\jbedge\Downloads\jenkins.war --httpPort=9090
+
+* For multimodule we need to create jar and then add jar as pendency in Pom.
+* For Html report we need to install Html publish plugin and then need to this in pipeline script.
+* sample jenkins file
+* To enable css we need to add 
+
+1 Manage Jenkins->
+2 Manage Nodes->
+3 Click settings(gear icon)->
+4 click Script console on left and type in the following command:
+5 System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
+and Press Run. If you see the output as 'Result:' below "Result" header then the protection disabled. Re-Run your build and you can see that the new HTML files archived will have the CSS enabled
+
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+
+            steps {
+                git branch: 'main', credentialsId: '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', url: 'https://github.com/iron-logic/RD'
+            }
+        }
+        stage('Run') {
+            steps {
+               bat '''
+                   echo "Buils starting..."'
+                   CD rrs
+                   mvn test -Dmaven.test.failure.ignore=true
+               '''
+            }
+        }
+        stage('Report') {
+            steps {
+                echo 'Creating report'
+            }
+        }
+        stage('Email') {
+             steps {
+                 echo 'Sharing Report'
+             }
+        }
+    }
+    post {
+     success {
+        publishHTML (target : [allowMissing: false,
+         alwaysLinkToLastBuild: true,
+         keepAll: true,
+         reportDir: 'TestReport/Reports_'+currentBuild.number+'/cucumber-html-reports',
+         reportFiles: 'overview-features.html',
+         reportName: 'My Reports',
+         reportTitles: 'The Report'])
+         }
+    }
+}
+
+** TO ENable css goto jenkins console and run this **
+System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")

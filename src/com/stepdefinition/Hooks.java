@@ -20,7 +20,7 @@ public class Hooks {
             e.printStackTrace();
         }
         try {
-//            testContext.getWebDriverManager().quitDriver();
+            testContext.getWebDriverManager().quitDriver();
         }catch (Exception e){
             e.printStackTrace();
         }
