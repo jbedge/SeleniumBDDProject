@@ -3,9 +3,15 @@ package com.stepdefinition;
 import com.base.TestConfiguration;
 import com.base.TestContext;
 import com.pages.HomePage;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
+import java.util.Map;
 
 public class homePageSteps {
 
@@ -33,6 +39,51 @@ public class homePageSteps {
     @Given("^I extract all urls from homepage$")
     public void i_extractURL() throws Throwable {
         homePage.extractURLs();
+    }
+
+    @And("User fills in the required information fields for adding a contest in State")
+    public void userFillsInTheRequiredInformationFieldsForAddingAContestInState(DataTable dataTable) throws Exception {
+//        homePage.enterTextInInputFields(dataTable);
+        List<Map<String, String>> data = dataTable.asMaps();
+        WebElement input;
+        // Iterate over each row in the DataTable
+        for (Map<String, String> row : data) {
+            String text = row.get("Text");
+            String field = row.get("Field");
+            String type = row.get("Type");
+            System.out.println("Adding data for :"+field +" -> "+text);
+            switch (type) {
+
+                case "dropdown":
+                    input = homePage.findElement(By.xpath("//label[normalize-space()= \"" + field + "\"]//following-sibling::*"));
+                    if(input.getAttribute("class").contains("dropdownlist")){
+                        input = homePage.findElement(By.xpath("//label[normalize-space()= \"" + field + "\"]//following-sibling::*[contains(@class,'dropdown')]//button"));
+                        input.click();
+                        homePage.waitfor(2);
+                        WebElement loctext = homePage.findElement(By.xpath("//li[@role='option']//*[normalize-space()='" + text + "']"));
+                        loctext.click();
+                        homePage.waitfor(2);
+                    }
+                    else {
+                        By loc = By.xpath("//label[normalize-space()= \"" + field + "\"]//following-sibling::select");
+                        homePage.selectByVisibleText(loc, text);
+                    }
+                    break;
+
+                case "input":
+                    input = homePage.findElement(By.xpath("//label[contains(text(), '" + field + "')]/following-sibling::*"));
+                    if(!input.getTagName().equals("input")){
+                        input = homePage.findElement(By.xpath("//label[contains(text(), '" + field + "')]/following-sibling::*/*"));
+                    }
+                    input.click();
+                    input.clear();
+                    input.sendKeys(text);
+                    break;
+
+                default:
+                    throw new RuntimeException("No element found->" + type);
+            }
+        }
     }
 
 
