@@ -4,7 +4,5 @@ e.g.
     And I navigate to "generic_wireline" url
 
     @Given("(I launch {string} URL)|(I navigate to {string} url)")
-    public void i_launch_the_url_with_username_pwd(String url) {
-        basePage.navigateToURL(url);
-    }
+
 
