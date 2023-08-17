@@ -1,0 +1,3 @@
+**When jar file is not downloading after dependacy**
+- make sure in pom.xml <packaging>jar</packaging if not update
+- run the force update command - mvn -U clean install -Djavax.net.ssl.truststore=WINDOWS-ROOT
