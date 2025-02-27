@@ -45,3 +45,14 @@ WebElement browser = driver.findElement(By.xpath("//input[@type='file']"));
 String getfile(){
         return new File("./src/main/resources/TestData/Copy.xlsx").getAbsolutePath();
     }
+
+********************* RIght click and hold code snippet *************************
+    int x = workAreaDocumentViewer.getLocation().getX();
+    int y = workAreaDocumentViewer.getLocation().getY();
+    PointerInput mouse = new PointerInput(PointerInput.Kind.MOUSE, "default mouse");
+    Sequence rightClickHoldAndDrag = new Sequence(mouse, 0);
+    rightClickHoldAndDrag.addAction(mouse.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x+10, y+10));
+    rightClickHoldAndDrag.addAction(mouse.createPointerDown(PointerInput.MouseButton.RIGHT.asArg()));
+    rightClickHoldAndDrag.addAction(mouse.createPointerMove(Duration.ofMillis(500), PointerInput.Origin.viewport(), x + 100, y + 100));
+    rightClickHoldAndDrag.addAction(mouse.createPointerUp(PointerInput.MouseButton.RIGHT.asArg()));
+    ((RemoteWebDriver) driver).perform(Arrays.asList(rightClickHoldAndDrag));

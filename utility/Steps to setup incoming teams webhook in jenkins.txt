@@ -1,0 +1,14 @@
+Create a channel in Teams
+Select a channel and click *Manage Teams*
+Click on settings
+Look for *Connectors* options if have any arrow expan that and click on edit
+Wait for screen to load
+Click on search and add "Incoming webhooks" and hit enter and add it
+Click on *configure* and 
+once the screen opens add the name like e.g. uat_links
+look for *create* button and click and wait
+and in the next screen you will get the channel link copy and paste somewhere
+click on Done
+and use these links in pipline for the message
+
+

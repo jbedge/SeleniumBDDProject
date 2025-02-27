@@ -1,0 +1,36 @@
+rd_smoke_prod-When branch is already exists-
+Git Branch
+Git Clone
+Git Commit
+Git Push
+Git merge
+
+-Push the local changes to New Repo-
+git init
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/jbedge/Demo.git
+git remote -v
+git pull --allow-unrelated-histories origin main
+git push origin main
+
+ git pull --all
+
+--Delete Repository--
+1)Select Repository
+2)Settigs
+3)Danger Zone
+
+git branch -M : adding the current branch as Main branch
+git remote -v :Shows URLs of remote repositories
+--allow-unrelated-histories : tell the Git that we allow merging branches with no common history base
+
+git clone https://github.com/jbedge/*.git
+git init
+git add .
+git commit -m"insert Message here"
+git push origin master
+
+--To Pull changes from one repo to anoother--
+git pull https://github.com/**/OCSB2B.git master

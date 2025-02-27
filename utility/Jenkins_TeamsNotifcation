@@ -1,0 +1,125 @@
+pipeline {
+    agent any
+
+    triggers {
+        cron('H H(6-22)/2 * * 1-5') // Runs the pipeline every 2 hours.
+    }
+
+    parameters {
+        string(name: 'Environment', defaultValue: 'Beta5', description: 'Environment to run the scripts')
+        string(name: 'RRS_CTN_BAN', defaultValue: 'NA', description: 'Comma separated values of CTN and BAN')
+    }
+
+    stages {
+
+        stage('Build') {
+            steps {
+                git branch: 'main', url: 'https://'
+            }
+        }
+
+        stage('Compile Common Module') {
+            steps {
+                bat '''
+                    echo "Compile starts..."
+                    CD commons
+                    mvn compile install -U
+                '''
+            }
+        }
+
+        stage('Run Tests for Multiple Environments') {
+            steps {
+                script {
+                    def modules = ['rd_dedicated', 'generic']
+                    def envList = ['Prod']
+                    def moduleResults = ""
+
+                    envList.each { env ->
+                        modules.each { module ->
+                            stage("Run ${module} scripts in ${env}") {
+                                bat """
+                                    echo "Executing ${module} in ${env}..."
+                                    CD ${module}
+                                    mvn test -Dmaven.test.failure.ignore=true -DEnvironment=${env} -Dtestng.suiteXmlFile=criticaltest.xml
+                                """
+                            }
+
+                            stage("Publish Reports for ${module} in ${env}") {
+                                publishHTML(target: [allowMissing         : false,
+                                                     alwaysLinkToLastBuild: true,
+                                                     keepAll              : true,
+                                                     reportDir            : "TestReport/Reports_${env}_${currentBuild.number}/cucumber-html-reports",
+                                                     reportFiles          : 'overview-features.html',
+                                                     reportName           : "Execution Reports ${module} in ${env}",
+                                                     reportTitles         : "Execution Report ${module} in ${env}"])
+
+                                // Capture pass and fail counts
+                                def reportRootDir = "${WORKSPACE}\\TestReport\\Reports_${env}_${currentBuild.number}\\cucumber-html-reports"
+                                def overviewFile = "${reportRootDir}\\overview-features.html"
+                                def output = bat(script: "mvn -pl commons surefire:test -Dsurefire.suiteXmlFiles=${WORKSPACE}\\commons\\src\\main\\resources\\testng.xml -Dreport.filepath=${overviewFile}", returnStdout: true).trim()
+
+                                def passed = 0
+                                def failed = 0
+                                output.split('\n').each { line ->
+                                    if (line.contains('Passed=')) {
+                                        passed = line.split('=')[1].trim().toInteger()
+                                    } else if (line.contains('Failed=')) {
+                                        failed = line.split('=')[1].trim().toInteger()
+                                    }
+                                }
+
+                                moduleResults += "<li>${module} in ${env}: Passed: ${passed}, Failed: ${failed}</li>"
+                            }
+                        }
+                    }
+
+                    // Store results in the current build's description
+                    currentBuild.description = moduleResults
+                }
+            }
+        }
+
+        stage('Send Email Summary') {
+            steps {
+                script {
+                    def emailBody = "<p>Test Summary for All Modules and Environments:</p><ul>${currentBuild.description}</ul>"
+                    emailBody += "<p>Check console output at <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>"
+
+                    emailext(
+                            to: '@gmail.com',
+                            subject: "Test Summary: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                            body: emailBody,
+                            mimeType: 'text/html'
+                    )
+                }
+            }
+        }
+
+        stage('Send Teams Notification') {
+            steps {
+                script {
+                    def teamsMessage =
+                            """{
+                "text": "**🚀 Jenkins Test Execution Summary 🚀**\\n
+${env.JOB_NAME} [${env.BUILD_NUMBER}]\\n
+${currentBuild.description}\\n
+View Build Console : ${env.BUILD_URL}"
+            }"""
+
+                    def TEAMS_WEBHOOK_URL = "https://office.com/webhookb2/09c92e7d-90dc-40f4-aefd-0ef804bebc11@0419b223-0b0b-45e0-8f7c-b8ef7510e3a4/IncomingWebhook/a37e0890fb4a4d7bae8f58e6e077092e/5c4be077-33eb-4fe6-9a70-553cde170585/V2vP9mKyDCHv5tABi6s1N-CXyGcK4KS3vTBRtjm7hprx01"
+
+                    // Save JSON to a temp file to avoid inline PowerShell string issues
+                    def jsonFile = "teamsMessage.json"
+                    writeFile file: jsonFile, text: teamsMessage
+
+                    bat """
+                powershell -Command "& { Invoke-RestMethod -Uri '${TEAMS_WEBHOOK_URL}' -Method Post -ContentType 'application/json' -InFile '${jsonFile}' }"
+            """
+                }
+            }
+        }
+
+
+    }
+}

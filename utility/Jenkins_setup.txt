@@ -35,7 +35,7 @@ pipeline {
         stage('Build') {
 
             steps {
-                git branch: 'main', credentialsId: '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', url: 'https://github.com/iron-logic/RD'
+                git branch: 'main', credentialsId: '', url: 'https://github.com/**/RD'
             }
         }
         stage('Run') {
@@ -73,3 +73,6 @@ pipeline {
 
 ** TO ENable css goto jenkins console and run this **
 System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
+
+** Jenkins git repo read issue ***
+C:\Users\jbedge\.jenkins\workspace goto workspace and delte all the directory
