@@ -26,7 +26,14 @@ import java.util.List;
 //        features = "resources/feature",
         features = "@target/rerun.txt",
         glue = {"com.pages","com.stepdefinition"},
-        plugin = { "pretty", "json:target/cucumberDefault.json","rerun:target/rerun.txt"},
+//        plugin = { "pretty", "json:target/cucumberDefault.json","rerun:target/rerun.txt"},
+        plugin = {
+                "pretty",
+                "json:target/cucumberDefault.json",
+                "rerun:target/rerun.txt",
+                "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm",
+                "com.rd.base.StepDetails"
+        },
         monochrome = true,
         dryRun = false,
         tags = "@unitcases"
