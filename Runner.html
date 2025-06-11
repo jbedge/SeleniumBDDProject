@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Automation Test Runner</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+        h2 { color: #333; }
+        .test-class {
+          background: #fff;
+          padding: 15px;
+          margin: 10px 0;
+          border-radius: 8px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .top-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .status {
+          font-weight: bold;
+          margin-left: 10px;
+        }
+        .status.running { color: orange; }
+        .status.passed { color: green; }
+        .status.failed { color: red; }
+
+        .log {
+          background: #f9f9f9;
+          border-left: 4px solid #ccc;
+          margin-top: 10px;
+          padding: 10px;
+          display: none;
+          white-space: pre-wrap;
+        }
+
+        button {
+          padding: 6px 10px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          background-color: #007BFF;
+          color: white;
+        }
+
+        button:hover { background-color: #0056b3; }
+
+        #runAllBtn {
+          background-color: #28a745;
+          margin-bottom: 20px;
+        }
+
+        #runAllBtn:hover {
+          background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Automation Test Runner</h2>
+<button id="runAllBtn" onclick="runAllTests()">▶ Run All</button>
+
+<div id="test-list">
+    <div class="test-class" data-name="LoginTest">
+        <div class="top-row">
+            <div>
+                <strong>LoginTest</strong>
+                <span class="status"></span>
+            </div>
+            <div>
+                <button onclick="runTest(this)">▶ Play</button>
+                <button onclick="toggleLog(this)">📝 Log</button>
+            </div>
+        </div>
+        <div class="log"></div>
+    </div>
+
+    <div class="test-class" data-name="PaymentTest">
+        <div class="top-row">
+            <div>
+                <strong>PaymentTest</strong>
+                <span class="status"></span>
+            </div>
+            <div>
+                <button onclick="runTest(this)">▶ Play</button>
+                <button onclick="toggleLog(this)">📝 Log</button>
+            </div>
+        </div>
+        <div class="log"></div>
+    </div>
+
+    <!-- Add more test classes similarly -->
+</div>
+
+<script>
+    async function runTest(button) {
+      const row = button.closest('.test-class');
+      const testName = row.getAttribute('data-name');
+      const statusEl = row.querySelector('.status');
+      const logEl = row.querySelector('.log');
+
+      statusEl.textContent = 'Running...';
+      statusEl.className = 'status running';
+      logEl.style.display = 'none';
+
+      try {
+        const res = await fetch(`/runTest?className=${testName}`, { method: 'POST' });
+        const result = await res.json();
+
+        if (result.status === 'passed') {
+          statusEl.textContent = '✔ Passed';
+          statusEl.className = 'status passed';
+        } else {
+          statusEl.textContent = '❌ Failed';
+          statusEl.className = 'status failed';
+        }
+
+        logEl.textContent = result.log || 'No logs available.';
+      } catch (err) {
+        statusEl.textContent = '❌ Error';
+        statusEl.className = 'status failed';
+        logEl.textContent = err.toString();
+      }
+    }
+
+    function toggleLog(button) {
+      const logEl = button.closest('.test-class').querySelector('.log');
+      logEl.style.display = logEl.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function runAllTests() {
+      document.querySelectorAll('.test-class button:first-child').forEach(btn => btn.click());
+    }
+</script>
+
+</body>
+</html>

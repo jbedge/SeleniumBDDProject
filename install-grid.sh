@@ -13,3 +13,5 @@ docker compose up -d
 docker compose up -d --scale chrome=10 --scale edge=5 --scale firefox=5
 #use this to up allure report
 docker compose -f docker-compose-allure.yaml up -d
+#To restart run the same command
+docker compose up -d

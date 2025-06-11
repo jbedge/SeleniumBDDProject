@@ -10,8 +10,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.*;
+import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,6 +75,10 @@ public class DriverManager {
                 writeFile(session_details,debugPort);
 //                System.out.println(debuggerport);
                 driver=(WebDriver)chromeDriver;
+
+//                using selenium grid using docker
+//                driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), options1);
+
                 driver.manage().deleteAllCookies();
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(0));
                 driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(60));
