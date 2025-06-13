@@ -1,6 +1,6 @@
 --Step 1--
 1.Use the below docker-cmopose-alure.yaml file to pull the image.
-![img_1.png](img_1.png)
+![img_1.png](utility/img_1.png)
 2. docker compose -f docker-compose-allure.yaml up -d
 3. check the report to verify server is up or not
  http://localhost:5050/allure-docker-service/projects/default/reports/latest/index.html

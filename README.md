@@ -12,4 +12,4 @@ Selenium BDD Cucumber framework
 6. To view the UI, click video icon from selenium grid and enter the passwod as "secret".
 
 
-![img.png](img.png)
+![img.png](utility/img.png)
