@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Route-wise Test Execution Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 12px; }
+        h1 { margin-bottom: 10px; }
+        .summary { padding: 10px; border: 1px solid #ccc; margin-bottom: 15px; border-radius: 6px; }
+        .routes { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .route-card {
+          border: 1px solid #007bff; border-radius: 6px; padding: 10px; width: 200px; cursor: pointer;
+          background: #f9f9f9;
+        }
+        .route-card:hover { background: #eef6ff; }
+        .route-title { font-weight: bold; color: #007bff; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+        th { background: #f4f4f4; }
+        .pass { color: green; }
+        .fail { color: red; }
+        .flaky { color: orange; }
+        .actions { margin-top: 15px; }
+        button { margin-right: 10px; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        button.green { border: 1px solid green; color: green; background: #f5fff5; }
+        button.purple { border: 1px solid purple; color: purple; background: #faf5ff; }
+        button.orange { border: 1px solid orange; color: orange; background: #fffaf5; }
+        .upload-box { border: 2px dashed #aaa; padding: 20px; text-align: center; margin-bottom: 20px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+<h1>Route-wise Test Execution Dashboard</h1>
+
+<div class="upload-box" id="uploadBox" style="display:none;">
+    <p>Could not auto-load <code>failed-tests-by-route.json</code>. <br>
+        Drop JSON file here or <input type="file" id="fileInput"></p>
+</div>
+
+<div class="summary" id="summary">Loading summary...</div>
+<div class="routes" id="routes"></div>
+<div id="routeDetails"></div>
+
+<script>
+    let data = {};
+
+    async function loadData() {
+      try {
+        const res = await fetch('failed-tests-by-route.json');
+        if (!res.ok) throw new Error("File not found");
+        data = await res.json();
+        render();
+      } catch (e) {
+        console.warn("Auto load failed:", e);
+        document.getElementById("uploadBox").style.display = "block";
+      }
+    }
+
+    document.getElementById("fileInput").addEventListener("change", function(evt){
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e){
+        data = JSON.parse(e.target.result);
+        render();
+        document.getElementById("uploadBox").style.display = "none";
+      };
+      reader.readAsText(file);
+    });
+
+    function render() {
+      renderSummary();
+      renderRoutes();
+    }
+
+    function renderSummary() {
+      const routes = Object.keys(data);
+      let total=0, passed=0, failed=0;
+      routes.forEach(rt=>{
+        const c = data[rt].counts;
+        total += c.total; passed += c.passed; failed += c.failed;
+      });
+      document.getElementById("summary").innerHTML =
+        `<b>Routes:</b> ${routes.length} &nbsp;
+         <b>Total tests:</b> ${total} &nbsp;
+         <b>Passed at least once:</b> ${passed} &nbsp;
+         <b>Failed in all runs:</b> ${failed}`;
+    }
+
+    function renderRoutes() {
+      const container = document.getElementById("routes");
+      container.innerHTML='';
+      for(const [route, info] of Object.entries(data)){
+        const div = document.createElement('div');
+        div.className='route-card';
+        div.onclick = ()=> showRoute(route, info);
+        div.innerHTML = `<div class="route-title">${route}</div>
+                         <div>Total: ${info.counts.total}</div>
+                         <div>Pass: ${info.counts.passed} | Fail: ${info.counts.failed}</div>`;
+        container.appendChild(div);
+      }
+    }
+
+    function showRoute(route, info) {
+      const container = document.getElementById("routeDetails");
+      container.innerHTML = `<h2>${route} - Test Details</h2>
+        <table>
+          <thead><tr>
+            <th>Select</th><th>Test ID</th><th>Status</th><th>Occurrences</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="actions">
+          <button class="green" onclick='downloadXml("${route}")'>Download Rerun XML</button>
+          <button class="purple" onclick='copyTestList("${route}")'>Copy Test List</button>
+        </div>`;
+      const tbody = container.querySelector("#tbody");
+      for (const [tid, tinfo] of Object.entries(info.tests)){
+        const tr=document.createElement("tr");
+        const statusClass = tinfo.passed ? "pass" : "fail";
+        tr.innerHTML = `<td><input type="checkbox" data-route="${route}" data-test="${tid}" ${tinfo.passed ? '' : 'checked'}></td>
+                        <td>${tid}</td>
+                        <td class="${statusClass}">${tinfo.passed ? 'PASSED' : 'FAILED'}</td>
+                        <td>${tinfo.occurrences.length}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function downloadXml(route) {
+      const rows = [...document.querySelectorAll(`input[data-route="${route}"]`)];
+      const selected = rows.filter(x=>x.checked).map(x=>x.dataset.test);
+      if (selected.length===0){ alert("No tests selected"); return; }
+      const byClass = {};
+      selected.forEach(tid=>{
+        const [cls, meth] = tid.split('#');
+        byClass[cls] = byClass[cls]||[];
+        byClass[cls].push(meth);
+      });
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      xml += '<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">\n';
+      xml += `<suite name="Rerun-Failed-${route}">\n  <test name="Rerun-Failed-Tests">\n    <classes>\n`;
+      for (const cls of Object.keys(byClass)){
+        xml += `      <class name="${cls}">\n        <methods>\n`;
+        for(const m of byClass[cls]) xml += `          <include name="${m}"/>\n`;
+        xml += `        </methods>\n      </class>\n`;
+      }
+      xml += '    </classes>\n  </test>\n</suite>';
+      const blob = new Blob([xml], {type:'application/xml'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `rerun-${route}.xml`;
+      a.click();
+    }
+
+    function copyTestList(route) {
+      const rows = [...document.querySelectorAll(`input[data-route="${route}"]`)];
+      const selected = rows.filter(x=>x.checked).map(x=>x.dataset.test);
+      navigator.clipboard.writeText(selected.join("\n")).then(()=>alert("Copied "+selected.length+" test ids"));
+    }
+
+    loadData();
+</script>
+</body>
+</html>

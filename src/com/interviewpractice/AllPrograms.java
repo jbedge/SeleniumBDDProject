@@ -9,11 +9,11 @@ public class AllPrograms {
     public static void main(String[] args) {
         reverseStringUsingForLoop();
         reverseStringUsingStream();
-//        fistNonRepetativeCharFromString();
-//        sortCharsInStringAlphabetically();
-//        fibonacciSeries();
-//        reverseNumber();
-//        isPrimeNumber();
+        fistNonRepetativeCharFromString();
+        sortCharsInStringAlphabetically();
+        fibonacciSeries();
+        reverseNumber();
+        isPrimeNumber();
     }
 
     private static void isPrimeNumber() {
